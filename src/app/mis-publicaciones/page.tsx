@@ -5,7 +5,11 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Mis publicaciones — RTP Market" };
 
-export default async function MisPublicacionesPage() {
+export default async function MisPublicacionesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ success?: string }>;
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?redirect=/mis-publicaciones");
@@ -16,6 +20,14 @@ export default async function MisPublicacionesPage() {
     .eq("user_id", user.id)
     .neq("status", "deleted")
     .order("created_at", { ascending: false });
+
+  const { success } = await searchParams;
+  const successMessage =
+    success === "created"
+      ? "¡Publicación creada correctamente!"
+      : success === "edited"
+      ? "¡Publicación editada correctamente!"
+      : undefined;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
@@ -32,7 +44,7 @@ export default async function MisPublicacionesPage() {
         </a>
       </div>
 
-      <MyListingsClient listings={listings ?? []} />
+      <MyListingsClient listings={listings ?? []} successMessage={successMessage} />
     </div>
   );
 }

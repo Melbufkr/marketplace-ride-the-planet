@@ -63,7 +63,7 @@ export default async function PerfilPage({
           <div>
             <p className="text-xs mb-0.5" style={{ color: "var(--dim)" }}>WhatsApp</p>
             <p className="text-sm" style={{ color: "var(--muted)" }}>
-              +{profile?.whatsapp_country_code} {profile?.whatsapp_number}
+              +{profile?.whatsapp_country_code?.replace(/^\+/, "")} {profile?.whatsapp_number}
             </p>
           </div>
           <div>

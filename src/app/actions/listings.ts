@@ -103,7 +103,6 @@ export async function createListingAction(
 
   if (mediaError) {
     console.error("[createListing media]", mediaError.message);
-    // No bloqueamos — el listing se creó igual, la foto puede reintentarse
   }
 
   // Recalcular relevance_score ahora que tiene fotos
@@ -111,7 +110,7 @@ export async function createListingAction(
     listing_id: listing.id,
   });
 
-  redirect(`/publicaciones/${listing.id}`);
+  redirect(`/mis-publicaciones?success=created`);
 }
 
 // ─── Actualizar listing ──────────────────────────────────
@@ -167,7 +166,7 @@ export async function updateListingAction(
   }));
   if (mediaRows.length) await supabase.from("listing_media").insert(mediaRows);
 
-  redirect(`/publicaciones/${id}`);
+  redirect(`/mis-publicaciones?success=edited`);
 }
 
 // ─── Cambiar estado ──────────────────────────────────────

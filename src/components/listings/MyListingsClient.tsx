@@ -34,9 +34,16 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   sold:    { bg: "rgba(148,163,184,0.12)", text: "#94a3b8" },
 };
 
-export function MyListingsClient({ listings: initial }: { listings: ListingRow[] }) {
+export function MyListingsClient({
+  listings: initial,
+  successMessage,
+}: {
+  listings: ListingRow[];
+  successMessage?: string;
+}) {
   const [listings, setListings] = useState(initial);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(!!successMessage);
   const [, startTransition] = useTransition();
 
   function toggleStatus(listing: ListingRow) {
@@ -65,6 +72,39 @@ export function MyListingsClient({ listings: initial }: { listings: ListingRow[]
     });
   }
 
+  return (
+    <>
+      {showSuccess && successMessage && (
+        <div
+          className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 mb-4 text-sm font-medium"
+          style={{ backgroundColor: "rgba(34,197,94,0.12)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.25)" }}
+        >
+          <span>✅ {successMessage}</span>
+          <button
+            onClick={() => setShowSuccess(false)}
+            className="text-base leading-none opacity-60 hover:opacity-100"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+      )}
+      <ListingsInner listings={listings} pendingId={pendingId} onToggle={toggleStatus} onDelete={handleDelete} />
+    </>
+  );
+}
+
+function ListingsInner({
+  listings,
+  pendingId,
+  onToggle,
+  onDelete,
+}: {
+  listings: ListingRow[];
+  pendingId: string | null;
+  onToggle: (l: ListingRow) => void;
+  onDelete: (l: ListingRow) => void;
+}) {
   if (listings.length === 0) {
     return (
       <div
@@ -157,7 +197,7 @@ export function MyListingsClient({ listings: initial }: { listings: ListingRow[]
             <div className="shrink-0 flex items-center gap-2">
               {canToggle && (
                 <button
-                  onClick={() => toggleStatus(listing)}
+                  onClick={() => onToggle(listing)}
                   disabled={isPending}
                   className="px-3 py-1.5 text-xs rounded-full border transition-colors hover:border-[var(--blue)] hover:text-[var(--accent)]"
                   style={{ borderColor: "var(--border)", color: "var(--muted)" }}
@@ -173,7 +213,7 @@ export function MyListingsClient({ listings: initial }: { listings: ListingRow[]
                 Editar
               </Link>
               <button
-                onClick={() => handleDelete(listing)}
+                onClick={() => onDelete(listing)}
                 disabled={isPending}
                 className="px-3 py-1.5 text-xs rounded-full border transition-colors hover:border-red-500 hover:text-red-400"
                 style={{ borderColor: "var(--border)", color: "var(--dim)" }}

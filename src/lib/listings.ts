@@ -57,7 +57,7 @@ export async function getFeaturedListings(limit = 8): Promise<ListingWithMedia[]
     .select(`
       *,
       listing_media ( id, url, media_type, order ),
-      users ( id, first_name, last_name, reputation_score )
+      users!listings_user_id_fkey ( id, first_name, last_name, reputation_score )
     `)
     .eq("status", "active")
     .order("relevance_score", { ascending: false })
@@ -82,7 +82,7 @@ export async function getListings({
   let query = supabase
     .from("listings")
     .select(
-      `*, listing_media ( id, url, media_type, order ), users ( id, first_name, last_name, reputation_score )`,
+      `*, listing_media ( id, url, media_type, order ), users!listings_user_id_fkey ( id, first_name, last_name, reputation_score )`,
       { count: "exact" }
     )
     .eq("status", "active");
@@ -157,7 +157,7 @@ export async function getListingById(id: string): Promise<ListingWithSeller | nu
     .select(`
       *,
       listing_media ( id, url, media_type, order ),
-      users ( id, first_name, last_name, reputation_score, whatsapp_country_code, whatsapp_number, email )
+      users!listings_user_id_fkey ( id, first_name, last_name, reputation_score, whatsapp_country_code, whatsapp_number, email )
     `)
     .eq("id", id)
     .neq("status", "deleted")
@@ -170,4 +170,3 @@ export async function getListingById(id: string): Promise<ListingWithSeller | nu
 
   return data as unknown as ListingWithSeller;
 }
-

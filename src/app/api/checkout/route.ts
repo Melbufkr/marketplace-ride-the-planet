@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     .from("listings")
     .select(`
       id, title, price, status, user_id,
-      users ( id, email, mp_user_id )
+      users!listings_user_id_fkey ( id, email, mp_user_id )
     `)
     .eq("id", listing_id)
     .single();
